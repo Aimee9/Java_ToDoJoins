@@ -102,7 +102,9 @@ ALTER SEQUENCE categories_tasks_id_seq OWNED BY categories_tasks.id;
 
 CREATE TABLE tasks (
     id integer NOT NULL,
-    description character varying(50)
+    description character varying(50),
+    is_completed boolean,
+    due_date character varying
 );
 
 
@@ -155,11 +157,8 @@ ALTER TABLE ONLY tasks ALTER COLUMN id SET DEFAULT nextval('tasks_id_seq'::regcl
 --
 
 COPY categories (id, name) FROM stdin;
-1	fun
-2	boring
-3	travel
-4	home chores
-5	school
+6	home
+7	school
 \.
 
 
@@ -167,7 +166,7 @@ COPY categories (id, name) FROM stdin;
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Guest
 --
 
-SELECT pg_catalog.setval('categories_id_seq', 5, true);
+SELECT pg_catalog.setval('categories_id_seq', 7, true);
 
 
 --
@@ -175,20 +174,7 @@ SELECT pg_catalog.setval('categories_id_seq', 5, true);
 --
 
 COPY categories_tasks (id, category_id, task_id) FROM stdin;
-1	1	1
-2	2	3
-3	3	1
-4	4	4
-5	4	3
-6	2	4
-7	1	2
-8	1	1
-9	3	4
-10	2	1
-11	1	3
-12	2	5
-13	1	4
-14	3	3
+16	6	12
 \.
 
 
@@ -196,22 +182,20 @@ COPY categories_tasks (id, category_id, task_id) FROM stdin;
 -- Name: categories_tasks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Guest
 --
 
-SELECT pg_catalog.setval('categories_tasks_id_seq', 14, true);
+SELECT pg_catalog.setval('categories_tasks_id_seq', 16, true);
 
 
 --
 -- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: Guest
 --
 
-COPY tasks (id, description) FROM stdin;
-2	eat pie
-3	do dishes
-4	mow the lawn
-5	wash the car
-1	dancing
-6	repairs
-7	garage 
-8	closets clean
+COPY tasks (id, description, is_completed, due_date) FROM stdin;
+12	sleeping	t	2015-09-25
+15	jogging	t	2015-10-16
+14	cooking	t	2015-09-30
+10	walking	t	2015-09-10
+17	pick up dog	f	2015-11-12
+18	trash	f	2015-10-22
 \.
 
 
@@ -219,7 +203,7 @@ COPY tasks (id, description) FROM stdin;
 -- Name: tasks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Guest
 --
 
-SELECT pg_catalog.setval('tasks_id_seq', 8, true);
+SELECT pg_catalog.setval('tasks_id_seq', 18, true);
 
 
 --
@@ -247,12 +231,12 @@ ALTER TABLE ONLY tasks
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: epicodus
+-- Name: public; Type: ACL; Schema: -; Owner: Guest
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM epicodus;
-GRANT ALL ON SCHEMA public TO epicodus;
+REVOKE ALL ON SCHEMA public FROM "Guest";
+GRANT ALL ON SCHEMA public TO "Guest";
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 

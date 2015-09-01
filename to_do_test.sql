@@ -102,7 +102,9 @@ ALTER SEQUENCE categories_tasks_id_seq OWNED BY categories_tasks.id;
 
 CREATE TABLE tasks (
     id integer NOT NULL,
-    description character varying(50)
+    description character varying(50),
+    is_completed boolean,
+    due_date character varying
 );
 
 
@@ -162,7 +164,7 @@ COPY categories (id, name) FROM stdin;
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Guest
 --
 
-SELECT pg_catalog.setval('categories_id_seq', 14, true);
+SELECT pg_catalog.setval('categories_id_seq', 5, true);
 
 
 --
@@ -177,14 +179,14 @@ COPY categories_tasks (id, category_id, task_id) FROM stdin;
 -- Name: categories_tasks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Guest
 --
 
-SELECT pg_catalog.setval('categories_tasks_id_seq', 10, true);
+SELECT pg_catalog.setval('categories_tasks_id_seq', 14, true);
 
 
 --
 -- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: Guest
 --
 
-COPY tasks (id, description) FROM stdin;
+COPY tasks (id, description, is_completed, due_date) FROM stdin;
 \.
 
 
@@ -192,7 +194,7 @@ COPY tasks (id, description) FROM stdin;
 -- Name: tasks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: Guest
 --
 
-SELECT pg_catalog.setval('tasks_id_seq', 16, true);
+SELECT pg_catalog.setval('tasks_id_seq', 8, true);
 
 
 --
@@ -220,12 +222,12 @@ ALTER TABLE ONLY tasks
 
 
 --
--- Name: public; Type: ACL; Schema: -; Owner: epicodus
+-- Name: public; Type: ACL; Schema: -; Owner: Guest
 --
 
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
-REVOKE ALL ON SCHEMA public FROM epicodus;
-GRANT ALL ON SCHEMA public TO epicodus;
+REVOKE ALL ON SCHEMA public FROM "Guest";
+GRANT ALL ON SCHEMA public TO "Guest";
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
