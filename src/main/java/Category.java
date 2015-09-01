@@ -66,29 +66,39 @@ public class Category {
     }
   }
 
-  public ArrayList<Task> getTasks() {
-    try(Connection con = DB.sql2o.open()) {
-      String sql = "SELECT task_id FROM categories_tasks WHERE category_id = :category_id";
-      //all the task_ids that match the category_id are returned as a List<Integer>
-      List<Integer> taskIds = con.createQuery(sql)
-        .addParameter("category_id", this.getId())
-        .executeAndFetch(Integer.class);
+  // public ArrayList<Task> getTasks() {
+  //   try(Connection con = DB.sql2o.open()) {
+  //     String sql = "SELECT task_id FROM categories_tasks WHERE category_id = :category_id";
+  //     //all the task_ids that match the category_id are returned as a List<Integer>
+  //     List<Integer> taskIds = con.createQuery(sql)
+  //       .addParameter("category_id", this.getId())
+  //       .executeAndFetch(Integer.class);
+  //
+  //     //create an empty array list to hold the new Task objects
+  //     ArrayList<Task> tasks = new ArrayList<Task>();
+  //
+  //     //loop through task_ids
+  //     for (Integer taskId : taskIds) {
+  //       String taskQuery = "SELECT * FROM tasks WHERE id = :task_id";
+  //       //for each id, create a new query that fetches the task and adds to [tasks]
+  //       Task task = con.createQuery(taskQuery)
+  //         .addParameter("task_id", taskId)
+  //         .executeAndFetchFirst(Task.class);
+  //       tasks.add(task);
+  //     }
+  //     return tasks;
+  //   }
+  // }
 
-      //create an empty array list to hold the new Task objects
-      ArrayList<Task> tasks = new ArrayList<Task>();
-
-      //loop through task_ids
-      for (Integer taskId : taskIds) {
-        String taskQuery = "SELECT * FROM tasks WHERE id = :task_id";
-        //for each id, create a new query that fetches the task and adds to [tasks]
-        Task task = con.createQuery(taskQuery)
-          .addParameter("task_id", taskId)
-          .executeAndFetchFirst(Task.class);
-        tasks.add(task);
-      }
-      return tasks;
+  public List<Task> getTasks() {
+  try(Connection con = DB.sql2o.open()) {
+    String sql = "SELECT tasks.* FROM categories JOIN categories_tasks ON (categories_tasks.category_id = categories.id) JOIN tasks ON (categories_tasks.task_id = tasks.id) WHERE category_id=:id ORDER BY due_date ASC";
+    return con.createQuery(sql)
+      .addParameter("id", id)
+      .executeAndFetch(Task.class);
     }
   }
+
 
   public void delete() {
       try(Connection con = DB.sql2o.open()) {

@@ -3,6 +3,7 @@ import java.util.List;
 import spark.ModelAndView;
 import spark.template.velocity.VelocityTemplateEngine;
 import static spark.Spark.*;
+import java.util.*;
 
 public class App {
   public static void main(String[] args) {
@@ -38,7 +39,7 @@ public class App {
     /* Category list/form --> See a particular category */
     get("/categories/:id", (request,response) ->{
       HashMap<String, Object> model = new HashMap<String, Object>();
-      int id = Integer.parseInt(request.params("id"));
+      int id = Integer.parseInt(request.params(":id"));
       Category category = Category.find(id);
       model.put("category", category);
       model.put("allTasks", Task.all());
@@ -50,7 +51,9 @@ public class App {
     post("/tasks", (request, response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
       String description = request.queryParams("description");
-      Task newTask = new Task(description);
+      String due_date = request.queryParams("due_date");
+      boolean is_completed =  Boolean.parseBoolean(request.queryParams("is_completed"));
+      Task newTask = new Task(description, due_date, is_completed);
       newTask.save();
       response.redirect("/tasks");
       return null;
@@ -78,7 +81,7 @@ public class App {
 
     get("/tasks/:id", (request,response) -> {
       HashMap<String, Object> model = new HashMap<String, Object>();
-      int id = Integer.parseInt(request.params("id"));
+      int id = Integer.parseInt(request.params(":id"));
       Task task = Task.find(id);
       model.put("task", task);
       model.put("allCategories", Category.all());
@@ -114,7 +117,9 @@ public class App {
 
       Task task = Task.find(Integer.parseInt(request.params(":id")));
       String new_task_name = request.queryParams("new_task_name");
+      boolean is_completed =  Boolean.parseBoolean(request.queryParams("is_completed"));
       task.update(new_task_name);
+      task.updateIsCompleted(is_completed);
 
       model.put("tasks",Task.all());
       model.put("task", task);
@@ -122,13 +127,14 @@ public class App {
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
 
-    // delete("/tasks/:id", (request, response) -> {
-    //   HashMap<String, Object> model = new HashMap<String, Object>();
-    //   Task task = Task.find(Integer.parseInt(request.params("id")));
-    //   task.delete();
-    //   model.put("template", "templates/task.vtl");
-    //   return new ModelAndView(model, layout);
-    // }, new VelocityTemplateEngine());
+    get("/tasks/:id/delete", (request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
+      Task task = Task.find(Integer.parseInt(request.params("id")));
+      task.delete();
+      response.redirect("/tasks");
+      return null;
+
+    });
 
   }
 }
